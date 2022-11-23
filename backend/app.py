@@ -31,7 +31,6 @@ submissions_dict = ExpiringDict(max_len=10000, max_age_seconds=86400)
 
 
 def parse_submission(submission):
-    # print(submission.title.split("]", "-"))
     location_header = re.split("\[|-|\]", submission.title)
     return {
         "author": submission.author.name,
