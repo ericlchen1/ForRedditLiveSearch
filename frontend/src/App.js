@@ -2,6 +2,7 @@ import "./App.css";
 import { Typography } from "@mui/material";
 import * as React from "react";
 import PostAccordian from "./components/PostAccordian";
+import { Container } from "@mui/system";
 
 const samplePost = {
   author: "SpeedyPlatypus",
@@ -19,10 +20,12 @@ function App() {
   return (
     <div className="App">
       <header className="App-header">
-        <Typography variant="h2" gutterBottom style={{ color: "#FF5700" }}>
-          r/hardwareswap
-        </Typography>
-        <PostAccordian postDetail={samplePost}></PostAccordian>
+        <Container>
+          <Typography variant="h2" gutterBottom style={{ color: "#FF5700" }}>
+            r/hardwareswap
+          </Typography>
+          <PostAccordian postDetail={samplePost}></PostAccordian>
+        </Container>
       </header>
     </div>
   );

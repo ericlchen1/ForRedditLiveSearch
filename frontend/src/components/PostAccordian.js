@@ -2,15 +2,15 @@ import {
   Accordion,
   AccordionDetails,
   AccordionSummary,
-  Button,
+  Chip,
   Grid,
   IconButton,
-  Link,
   Typography,
 } from "@mui/material";
 import * as React from "react";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import ShareIcon from "@mui/icons-material/Share";
+import ReactTimeAgo from "react-time-ago";
 
 function PostAccordian({ postDetail }) {
   const [expand, setExpand] = React.useState(false);
@@ -31,7 +31,7 @@ function PostAccordian({ postDetail }) {
         <div style={{ display: "flex", flexDirection: "row", width: "100%" }}>
           <Grid container spacing={2}>
             <Grid item xs={10}>
-              <Grid container spacing={2}>
+              <Grid container>
                 <Grid item xs={12}>
                   <Grid container spacing={2}>
                     <Grid item xs={10} style={{ textAlign: "left" }}>
@@ -40,17 +40,32 @@ function PostAccordian({ postDetail }) {
                       </Typography>
                     </Grid>
                     <Grid item xs={2} style={{ textAlign: "left" }}>
-                      <Typography>{postDetail.created_utc}</Typography>
+                      <Typography>
+                        <ReactTimeAgo
+                          date={new Date(postDetail.created_utc * 1000)}
+                          locale="en-US"
+                        />
+                      </Typography>
                     </Grid>
                   </Grid>
                 </Grid>
                 <Grid item xs={12}>
-                  <Grid container spacing={2}>
+                  <Grid container spacing={1}>
                     <Grid item>
-                      <Typography>{postDetail.country}</Typography>
+                      <Chip
+                        label={postDetail.country}
+                        color="primary"
+                        variant="outlined"
+                        size="small"
+                      />
                     </Grid>
                     <Grid item>
-                      <Typography>{postDetail.state}</Typography>
+                      <Chip
+                        label={postDetail.state}
+                        color="secondary"
+                        variant="outlined"
+                        size="small"
+                      />
                     </Grid>
                   </Grid>
                 </Grid>
@@ -60,6 +75,7 @@ function PostAccordian({ postDetail }) {
               <IconButton
                 aria-label="share"
                 onClick={() => window.open(postDetail.url)}
+                style={{ margin: "auto" }}
               >
                 <ShareIcon />
               </IconButton>
@@ -69,7 +85,10 @@ function PostAccordian({ postDetail }) {
       </AccordionSummary>
       <AccordionDetails>
         <div style={{ width: "100%", textAlign: "left" }}>
-          <Typography>{postDetail.author}</Typography>
+          <Typography>
+            <strong>Author: </strong>
+            {postDetail.author}
+          </Typography>
           <Typography>{postDetail.selftext}</Typography>
         </div>
       </AccordionDetails>
