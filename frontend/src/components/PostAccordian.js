@@ -90,9 +90,9 @@ function PostAccordian({ postDetail }) {
             <strong>Author: </strong>
             {postDetail.author}
           </Typography>
-          <Typography>
-            <MuiMarkdown>{postDetail.selftext}</MuiMarkdown>
-          </Typography>
+          <MuiMarkdown overrides={{ span: { component: Typography } }}>
+            {postDetail.selftext}
+          </MuiMarkdown>
         </div>
       </AccordionDetails>
     </Accordion>
