@@ -19,7 +19,7 @@ function PostAccordian({ postDetail }) {
   };
 
   return (
-    <Accordion expanded={expand}>
+    <Accordion expanded={expand} style={{ marginBottom: "0.5em" }}>
       <AccordionSummary
         expandIcon={
           <ExpandMoreIcon
