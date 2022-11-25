@@ -4,6 +4,9 @@ import os
 from flask import Flask, jsonify, request
 from expiringdict import ExpiringDict
 import re
+import threading
+from sortedcontainers import SortedList
+import json
 
 APP_NAME = "HardwareLivesearchClient"
 APP_VERSION = 0.1
@@ -30,7 +33,7 @@ subreddit = reddit.subreddit(subreddit)
 submissions_dict = ExpiringDict(max_len=10000, max_age_seconds=86400)
 
 
-def parse_submission(submission):
+def parse_submission(submission: praw.reddit.Submission):
     location_header = re.split("\[|-|\]", submission.title)
     return {
         "author": submission.author.name,
@@ -43,22 +46,53 @@ def parse_submission(submission):
     }
 
 
+# TODO: Change to redis later
+sorted_posts = SortedList(key=lambda x: -x["created_utc"])
+
+
+def background_update(sorted_posts: SortedList):
+    for submission in subreddit.stream.submissions():
+        formatted_submission = parse_submission(submission)
+        sorted_posts.add(formatted_submission)
+        if len(sorted_posts) > 1000:  # Keep below 1000 elements
+            sorted_posts.pop()
+
+
+thread = threading.Thread(
+    name="background_update", target=background_update, args=[sorted_posts]
+)
+thread.setDaemon(True)
+thread.start()
+
 app = Flask(__name__)
 
 
-@app.route("/new_posts", methods=["GET"])
-def new_posts():
+@app.route("/all_posts_stream", methods=["GET"])
+def all_posts_stream():
+    def generate():
+        for post in sorted_posts:
+            yield f'{json.dumps(post)}\n'
+
+    return app.response_class(generate(), mimetype="application/json")
+
+
+@app.route("/new_posts_stream", methods=["GET"])
+def new_posts_stream():
     request_state = request.args.get("state")
     request_exclude_unknown = request.args.get("excludeUnknown")
-    posts = []
-    for submission in subreddit.new(limit=10):
-        if submission.title not in submissions_dict:
+
+    def generate():
+        for submission in subreddit.stream.submissions(skip_existing=True):
             formatted_submission = parse_submission(submission)
             if (
                 not request_state
                 or formatted_submission["state"] == request_state
                 or (not formatted_submission["state"] and request_exclude_unknown)
             ):
-                posts.append(formatted_submission)
-                submissions_dict[submission.title] = formatted_submission
-    return jsonify(posts)
+                yield f'{json.dumps(formatted_submission)}\n'
+
+    return app.response_class(generate(), mimetype="application/json")
+
+
+if __name__ == "__main__":
+    app.run()

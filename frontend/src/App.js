@@ -4,6 +4,7 @@ import * as React from "react";
 import PostAccordian from "./components/PostAccordian";
 import { Container } from "@mui/system";
 import axios from "axios";
+import ndjsonStream from "can-ndjson-stream";
 
 const samplePosts = [
   {
@@ -36,9 +37,22 @@ function App() {
   const [posts, setPosts] = React.useState([]);
 
   React.useEffect(() => {
-    axios.get(`${BACKEND_URL}/new_posts`).then((response) => {
-      setPosts(response.data);
-    });
+    const fetchData = async () => {
+      var temp = [];
+      const response = await fetch(`${BACKEND_URL}/all_posts_stream`);
+      const exampleReader = ndjsonStream(response.body).getReader();
+
+      let result;
+      while (!result || !result.done) {
+        result = await exampleReader.read();
+        if (result.value !== undefined) {
+          temp.push(result.value);
+        }
+      }
+      setPosts(temp);
+    };
+
+    fetchData();
   }, []);
 
   return (
