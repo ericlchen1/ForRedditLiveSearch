@@ -11,6 +11,7 @@ import * as React from "react";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import ShareIcon from "@mui/icons-material/Share";
 import ReactTimeAgo from "react-time-ago";
+import MuiMarkdown from "mui-markdown";
 
 function PostAccordian({ postDetail }) {
   const [expand, setExpand] = React.useState(false);
@@ -89,7 +90,9 @@ function PostAccordian({ postDetail }) {
             <strong>Author: </strong>
             {postDetail.author}
           </Typography>
-          <Typography>{postDetail.selftext}</Typography>
+          <Typography>
+            <MuiMarkdown>{postDetail.selftext}</MuiMarkdown>
+          </Typography>
         </div>
       </AccordionDetails>
     </Accordion>
