@@ -11,6 +11,7 @@ import json
 APP_NAME = "HardwareLivesearchClient"
 APP_VERSION = 0.1
 APP_OWNER = "ericlchen1"
+SUBREDDIT_NAME = "hardwareswap"
 
 load_dotenv()
 client_id = os.environ.get("client_id")
@@ -18,8 +19,6 @@ client_secret = os.environ.get("client_secret")
 username = os.environ.get("username")
 password = os.environ.get("password")
 user_agent = f"{APP_NAME}/{APP_VERSION} by {APP_OWNER}"
-
-subreddit = "hardwareswap"
 
 reddit = praw.Reddit(
     client_id=client_id,
@@ -29,7 +28,7 @@ reddit = praw.Reddit(
     password=password,
 )
 
-subreddit = reddit.subreddit(subreddit)
+subreddit = reddit.subreddit(SUBREDDIT_NAME)
 submissions_dict = ExpiringDict(max_len=10000, max_age_seconds=86400)
 
 
@@ -71,7 +70,7 @@ app = Flask(__name__)
 def all_posts_stream():
     def generate():
         for post in sorted_posts:
-            yield f'{json.dumps(post)}\n'
+            yield f"{json.dumps(post)}\n"
 
     return app.response_class(generate(), mimetype="application/json")
 
@@ -89,7 +88,7 @@ def new_posts_stream():
                 or formatted_submission["state"] == request_state
                 or (not formatted_submission["state"] and request_exclude_unknown)
             ):
-                yield f'{json.dumps(formatted_submission)}\n'
+                yield f"{json.dumps(formatted_submission)}\n"
 
     return app.response_class(generate(), mimetype="application/json")
 
