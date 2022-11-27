@@ -4,6 +4,7 @@ import * as React from "react";
 import PostAccordian from "./components/PostAccordian";
 import { Container } from "@mui/system";
 import ndjsonStream from "can-ndjson-stream";
+import SelectBar from "./components/SelectBar";
 
 const BACKEND_URL = "http://localhost:5000";
 
@@ -31,16 +32,27 @@ function App() {
 
   return (
     <div className="App">
-      <header className="App-header">
-        <Container>
-          <Typography variant="h2" gutterBottom style={{ color: "#FF5700" }}>
-            r/hardwareswap
-          </Typography>
-          {posts.map((post) => (
-            <PostAccordian postDetail={post} key={post.title}></PostAccordian>
-          ))}
-        </Container>
+      <header
+        style={{
+          backgroundColor: "#282c34",
+          paddingTop: "2em",
+          paddingBottom: "0.5em",
+          marginBottom: "1em",
+        }}
+      >
+        <Typography variant="h2" gutterBottom style={{ color: "#FF5700" }}>
+          r/hardwareswap
+        </Typography>
       </header>
+      <Container>
+        <SelectBar />
+        {posts.map((post) => (
+          <PostAccordian
+            postDetail={post}
+            key={`${post.title}${post.created_utc}`}
+          ></PostAccordian>
+        ))}
+      </Container>
     </div>
   );
 }
